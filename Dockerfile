@@ -2,6 +2,9 @@ FROM python:3.7.5-buster
 
 MAINTAINER Keisuke Yamanaka <vaivailx@gmail.com>
 
+WORKDIR /app
+ADD . /app
+
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -13,8 +16,8 @@ RUN echo "deb http://www.deb-multimedia.org buster main non-free" >> /etc/apt/so
     && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
     && apt-get -y install ffmpeg \
     # Update Python environment based on requirements.txt
-    && pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
-    && rm -rf /tmp/pip-tmp \
+    && pip --disable-pip-version-check --no-cache-dir install -r ./tmp/pip-tmp/requirements.txt \
+    && rm -rf ./tmp/pip-tmp \
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \

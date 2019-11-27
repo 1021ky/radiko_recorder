@@ -2,7 +2,6 @@ Dockerfile
 *.md
 *.aac
 .devcontainer
-tmp
 *.pyc
 *.pyo
 *.pyd

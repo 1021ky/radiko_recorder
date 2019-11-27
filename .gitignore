@@ -1,7 +1,6 @@
-*.md
 *.aac
 .devcontainer
-tmp
+.DS_Store
 *.pyc
 *.pyo
 *.pyd
