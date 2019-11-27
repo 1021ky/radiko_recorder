@@ -9,6 +9,7 @@ import requests
 from requests.exceptions import Timeout
 import sys
 import time
+from google.cloud import storage
 
 class RadikoRecorder(object):
     """Radikoの録音クラス"""
@@ -165,6 +166,18 @@ class RadikoAuth(object):
         partial_key = base64.b64encode(RadikoAuth._RADIKO_AUTH_KEY[offset: offset + length])
         return partial_key
 
+def upload_blob(bucket_name, source_file_name, destination_blob_name):
+    """Uploads a file to the bucket."""
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
+
+    print('File {} uploaded to {}.'.format(
+        source_file_name,
+        destination_blob_name))
+
 def _get_args():
     parser = argparse.ArgumentParser(description='record radiko')
     parser.add_argument('station',
@@ -191,7 +204,7 @@ if __name__ == "__main__":
         program name: {program}, \
         recording time: {rtime}')
     # 録音保存先を用意する
-    outfilename = f'./{current_time}_{station}_{program}.mp4'
+    outfilename = f'./tmp/{current_time}_{station}_{program}.aac'
     # 録音を実施する
     logging.debug(f'outfilename:{outfilename}')
     recorder = RadikoRecorder(station, rtime, outfilename)
@@ -205,10 +218,11 @@ if __name__ == "__main__":
         streams = [ffmpeg.input(filename=f'./tmp/{r}.aac') for r in l]
         ffmpeg\
             .concat(*streams,a=1,v=0)\
-            .output(filename=f'./joined.aac' ,absf='aac_adtstoasc')\
+            .output(filename=outfilename, absf='aac_adtstoasc')\
             .run(capture_stdout=True)
         #  .get_args('-loglevel', 'error')\
     except Exception as e:
         logging.warning('failed in run ffmpeg concat')
         logging.warning(e)
+    upload_blob('gs://radiko-recorder', outfilename, outfilename)
 
