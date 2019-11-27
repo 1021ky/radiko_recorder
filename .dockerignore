@@ -1,0 +1,9 @@
+Dockerfile
+*.md
+*.aac
+.devcontainer
+tmp
+*.pyc
+*.pyo
+*.pyd
+__pycache__
