@@ -10,8 +10,11 @@ from requests.exceptions import Timeout
 import sys
 import time
 from google.cloud import storage
+<<<<<<< HEAD
 
 JST = timezone(timedelta(hours=+9), 'JST')
+=======
+>>>>>>> 5981385eb5606bb2efb6779c760d36e86cd074f0
 
 class RadikoRecorder(object):
     """Radikoの録音クラス"""
