@@ -2,7 +2,8 @@ FROM python:3.7.5-buster
 
 MAINTAINER Keisuke Yamanaka <vaivailx@gmail.com>
 
-WORKDIR /app
+ENV APP_HOME /app
+WORKDIR $APP_HOME
 ADD . /app
 
 # Avoid warnings by switching to noninteractive
@@ -25,9 +26,12 @@ RUN echo "deb http://www.deb-multimedia.org buster main non-free" >> /etc/apt/so
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=
-# Copy file
 
 # Set Tokyo ID
 ENV RADIKO_AREA_ID=JP13
 
-CMD ["python", "record_radiko.py", "LFR", "nishikawa_chokonaipon", "10"]
+ENV GOOGLE_APPLICATION_CREDENTIALS=/app/radiko_recorder_account_key.json
+
+ENV PORT '8080'
+CMD python3 api.py
+EXPOSE 8080

@@ -11,6 +11,8 @@ import sys
 import time
 from google.cloud import storage
 
+JST = timezone(timedelta(hours=+9), 'JST')
+
 class RadikoRecorder(object):
     """Radikoの録音クラス"""
 
@@ -192,11 +194,7 @@ def _get_args():
     args = parser.parse_args()
     return args.station, args.program, args.recordtime
 
-if __name__ == "__main__":
-    # ログ設定をする
-    logging.basicConfig(filename=f'/var/log/record_radiko.log', level=logging.DEBUG)
-    # 実行時パラメータを取得する
-    station, program, rtime = _get_args()
+def record(station, program, rtime):
     JST = timezone(timedelta(hours=+9), 'JST')
     current_time = datetime.now(tz=JST).strftime("%Y%m%d_%H%M")
     logging.debug(f'current time: {current_time}, \
@@ -224,5 +222,11 @@ if __name__ == "__main__":
     except Exception as e:
         logging.warning('failed in run ffmpeg concat')
         logging.warning(e)
-    upload_blob('gs://radiko-recorder', outfilename, outfilename)
+    upload_blob('radiko-recorder', outfilename, f'{current_time}_{station}_{program}.aac')
 
+if __name__ == "__main__":
+    # ログ設定をする
+    logging.basicConfig(filename=f'/var/log/record_radiko.log', level=logging.DEBUG)
+    # 実行時パラメータを取得する
+    station, program, rtime = _get_args()
+    record(station, program, rtime)
