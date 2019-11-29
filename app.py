@@ -1,7 +1,9 @@
 import os
-
+import logging
 import responder
 from record_radiko import record as record_radiko
+
+logging.basicConfig(filename=f'/var/log/record_radiko.log', level=logging.DEBUG)
 
 api = responder.API()
 

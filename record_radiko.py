@@ -10,11 +10,8 @@ from requests.exceptions import Timeout
 import sys
 import time
 from google.cloud import storage
-<<<<<<< HEAD
 
 JST = timezone(timedelta(hours=+9), 'JST')
-=======
->>>>>>> 5981385eb5606bb2efb6779c760d36e86cd074f0
 
 class RadikoRecorder(object):
     """Radikoの録音クラス"""
@@ -139,6 +136,9 @@ class RadikoAuth(object):
         self._headers['X-Radiko-Partialkey'] = self._get_partial_key(res)
         res = self._call_auth_api(RadikoAuth._AUTH2_URL)
         logging.debug(f'authenticated headers:{self._headers}')
+        logging.debug(f'res.headers:{res.headers}')
+        logging.debug(f'res.cookies:{res.cookies}')
+        logging.debug(f'res.content:{res.content}')
 
     def _call_auth_api(self, api_url):
         """Radikoの認証APIを呼ぶ"""
