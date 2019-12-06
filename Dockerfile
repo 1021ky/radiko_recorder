@@ -33,5 +33,5 @@ ENV RADIKO_AREA_ID=JP13
 ENV GOOGLE_APPLICATION_CREDENTIALS=/app/radiko_recorder_account_key.json
 
 ENV PORT '8080'
-CMD python3 api.py
+CMD python3 webapp.py
 EXPOSE 8080
