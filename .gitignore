@@ -1,0 +1,10 @@
+*.aac
+.devcontainer
+.DS_Store
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+radiko_recorder_account_key.json
+.vscode
+*.mp4
