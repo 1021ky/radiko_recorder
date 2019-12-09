@@ -1,8 +1,10 @@
+from datetime import datetime, timedelta, timezone
 import os
 import logging
 import responder
 
-from radiko.recorder import record as record_radiko
+from gcloud import upload_blob
+from radiko.recorder import record
 
 logging.basicConfig(filename=f'/var/log/record_radiko.log', level=logging.DEBUG)
 
@@ -16,7 +18,19 @@ async def record(req, resp):
         station = params.get('station', '')
         program = params.get('program', '')
         rtime = int(params.get('rtime', 0))
-        record_radiko(station, program, rtime)
+        JST = timezone(timedelta(hours=+9), 'JST')
+        current_time = datetime.now(tz=JST).strftime("%Y%m%d_%H%M")
+        logging.debug(f'current time: {current_time}, \
+            station: {station}, \
+            program name: {program}, \
+            recording time: {rtime}')
+        # 録音保存先を用意する
+        outfilename = f'./tmp/{current_time}_{station}_{program}.aac'
+        logging.debug(f'outfilename:{outfilename}')
+        # 録音してアップロード
+        record(station, program, rtime, outfilename)
+        upload_blob('radiko-recorder', outfilename, f'{current_time}_{station}_{program}.aac')
+
 
     process_param(req.params)
     resp.media = {'success': True}

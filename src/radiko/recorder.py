@@ -105,19 +105,8 @@ class RadikoRecorder(object):
         logging.debug('record end')
         return recorded
 
-def record(station, program, rtime):
-    res = requests.get('http://ipinfo.io')
-    logging.debug(f'ipinfo.io content:{res.content}')
-    JST = timezone(timedelta(hours=+9), 'JST')
-    current_time = datetime.now(tz=JST).strftime("%Y%m%d_%H%M")
-    logging.debug(f'current time: {current_time}, \
-        station: {station}, \
-        program name: {program}, \
-        recording time: {rtime}')
-    # 録音保存先を用意する
-    outfilename = f'./tmp/{current_time}_{station}_{program}.aac'
+def record(station, program, rtime, outfilename):
     # 録音を実施する
-    logging.debug(f'outfilename:{outfilename}')
     recorder = RadikoRecorder(station, rtime, outfilename)
     recorded = recorder.record()
     # mp3ファイルを一つに
@@ -134,4 +123,3 @@ def record(station, program, rtime):
         logging.warning(e)
     for f in files:
         os.remove(f)
-    upload_blob('radiko-recorder', outfilename, f'{current_time}_{station}_{program}.aac')
