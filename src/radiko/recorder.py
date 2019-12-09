@@ -90,7 +90,6 @@ class RadikoRecorder(object):
             for dt, url in url_list:
                 if dt in recorded:
                     continue
-                recorded.add(dt)
                 if not os.path.isdir('./tmp'):
                     os.mkdir('./tmp')
                 try:
@@ -101,6 +100,7 @@ class RadikoRecorder(object):
                 except Exception as e:
                     logging.warning('failed in run ffmpeg')
                     logging.warning(e)
+                recorded.add(dt)
             time.sleep(5.0)
         logging.debug('record end')
         return recorded
