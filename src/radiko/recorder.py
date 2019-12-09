@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import requests
 from requests.exceptions import Timeout
+import os
 import sys
 import time
 import logging
@@ -70,7 +71,6 @@ class RadikoRecorder(object):
         if r.status_code != 200:
             return None
         m3u8_obj = m3u8.loads(str(r.content.decode('utf-8')))
-        m3u8_obj.segments.reverse() # 時刻昇順にする
         return [(s.program_date_time, s.uri) for s in m3u8_obj.segments]
 
     def record(self):
@@ -86,11 +86,13 @@ class RadikoRecorder(object):
                 time.sleep(3.0)
                 continue
             headers = self._make_audio_headers()
-            # save audio m3u8ファイルに記述されている音声ファイルを取得する
+            # m3u8ファイルに記述されている音声ファイルを重複しないように取得する
             for dt, url in url_list:
                 if dt in recorded:
                     continue
                 recorded.add(dt)
+                if not os.path.isdir('./tmp'):
+                    os.mkdir('./tmp')
                 try:
                     ffmpeg\
                     .input(filename=url, f='aac', headers=headers)\
@@ -119,11 +121,10 @@ def record(station, program, rtime):
     recorder = RadikoRecorder(station, rtime, outfilename)
     recorded = recorder.record()
     # mp3ファイルを一つに
+    l = sorted(recorded)
+    files = [f'./tmp/{e}.aac' for e in l]
     try:
-        l = list(recorded)
-        l.sort()
-        print(l)
-        streams = [ffmpeg.input(filename=f'./tmp/{r}.aac') for r in l]
+        streams = [ffmpeg.input(filename=f) for f in files]
         ffmpeg\
             .concat(*streams,a=1,v=0)\
             .output(filename=outfilename, absf='aac_adtstoasc')\
@@ -131,4 +132,6 @@ def record(station, program, rtime):
     except Exception as e:
         logging.warning('failed in run ffmpeg concat')
         logging.warning(e)
+    for f in files:
+        os.remove(f)
     upload_blob('radiko-recorder', outfilename, f'{current_time}_{station}_{program}.aac')

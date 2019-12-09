@@ -4,7 +4,8 @@ MAINTAINER Keisuke Yamanaka <vaivailx@gmail.com>
 
 ENV APP_HOME /app
 WORKDIR $APP_HOME
-ADD . /app
+ADD ./requirements.txt /app
+ADD ./src /app
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
