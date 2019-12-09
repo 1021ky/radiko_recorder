@@ -1,0 +1,2 @@
+# radiko_recorder
+radikoの録音をするpythonスクリプト。実行時に環境変数でエリアIDを指定する必要があるので注意。
